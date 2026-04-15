@@ -1,53 +1,93 @@
-# Tauri Windows 本地环境初始化记录
+# CompareImg
 
-当前目录已经完成以下配置：
+CompareImg 是一个基于 `Tauri + TypeScript` 开发的 Windows 桌面工具，用于对比两个文件夹中同名图片的尺寸是否一致。
 
-- `Node.js` 与 `npm` 可用
-- 项目本地 Rust 工具链已安装到 `E:\AIco\newFolder\.cargo-local` 和 `E:\AIco\newFolder\.rustup-local`
-- 已安装 `Visual Studio 2022 Build Tools`
-- 已安装 `Windows 10 SDK (10.0.19041.0)`
-- 已初始化 `Vite + TypeScript + Tauri 2` 项目
+当前版本主要面向美术资源、UI 资源和本地包体检查场景，帮助快速发现：
 
-## 可直接使用的脚本
+- 同名图片尺寸不一致
+- 某一侧文件缺失
+- 扩展名存在但图片内容异常，无法正确读取尺寸
 
-查看当前环境版本：
+## 功能概览
 
-```powershell
-powershell -ExecutionPolicy Bypass -File E:\AIco\newFolder\scripts\enter-tauri-dev-shell.ps1
-```
+- 选择两个文件夹进行比对
+- 支持从资源管理器直接拖拽文件夹到选择区域
+- 按文件名匹配两个文件夹中的图片
+- 仅比较文件夹第一层文件，不递归子目录
+- 支持常见图片格式：
+  - `png`
+  - `jpg`
+  - `jpeg`
+  - `webp`
+  - `bmp`
+  - `gif`
+- 结果列表支持：
+  - 一致 / 尺寸异常 / 文件缺失 分类筛选
+  - `仅显示wordpic` 快速过滤
+  - 分页展示，每页 10 条
+- 点击结果项后可查看两侧图片预览和尺寸详情
 
-启动 Tauri 开发模式：
+## 判定规则
+
+- 以文件名作为匹配依据
+- 两侧同名图片的宽和高都完全一致，才判定为“尺寸一致”
+- 某个文件仅存在于其中一个文件夹时，判定为“文件缺失”
+- 如果文件扩展名符合图片格式，但实际内容损坏或格式错误，则该条结果会显示为异常
+
+## 使用方式
+
+1. 启动软件
+2. 选择文件夹 A 和文件夹 B
+3. 点击“开始比对”
+4. 在结果列表中查看比对结果
+5. 点击任意一条记录，在右侧查看预览图和尺寸详情
+
+## 界面说明
+
+- 顶部区域：文件夹选择、拖拽导入、比对状态
+- 左侧区域：结果列表、条件筛选、分页
+- 右侧区域：当前选中结果的两侧图片预览和尺寸信息
+
+## 开发环境
+
+- Node.js
+- npm
+- Rust
+- Visual Studio 2022 Build Tools
+- Windows SDK
+
+## 本地开发
+
+安装依赖：
 
 ```bat
-E:\AIco\newFolder\scripts\tauri-dev.cmd
-```
-
-执行 Tauri 构建：
-
-```bat
-E:\AIco\newFolder\scripts\tauri-build.cmd
-```
-
-## 当前状态
-
-以下内容已经验证通过：
-
-- 前端 `vite build` 可执行
-- Rust/Tauri release 构建可执行
-- 可生成应用程序文件：
-  - `E:\AIco\newFolder\src-tauri\target\release\aico_desktop.exe`
-
-当前唯一未完成项是安装包打包阶段。
-
-`tauri build` 在最后的 bundle 阶段会去下载 WiX Toolset，用于生成 MSI 安装包；当前这一步仍可能受网络影响失败。
-
-如果你只需要先产出可运行的桌面程序，当前已经具备条件。
-
-## 项目常用命令
-
-```bat
-cd /d E:\AIco\newFolder
 npm install
-scripts\tauri-dev.cmd
-scripts\tauri-build.cmd
 ```
+
+启动开发模式：
+
+```bat
+scripts\tauri-dev.cmd
+```
+
+执行构建：
+
+```bat
+scripts\tauri-build.cmd -- --no-bundle
+```
+
+构建完成后，可执行文件默认位于：
+
+```text
+src-tauri\target\release\aico_desktop.exe
+```
+
+## 项目说明
+
+当前 README 为基础版本，后续可继续补充：
+
+- 截图示例
+- 典型使用场景
+- 版本更新记录
+- 打包与发布流程
+- 常见问题说明
