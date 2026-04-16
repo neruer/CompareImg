@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "AIco Desktop",
+  "productName": "CompareImg",
   "version": "0.1.0",
   "identifier": "com.aico.desktop",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "AIco Desktop",
+        "title": "CompareImg",
         "width": 800,
         "height": 600,
         "resizable": true,
