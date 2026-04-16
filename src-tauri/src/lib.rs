@@ -12,7 +12,7 @@ use tauri_plugin_dialog::DialogExt;
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
-struct ImageStatusSize {
+struct ImageSize {
   width: u32,
   height: u32,
 }
@@ -32,8 +32,8 @@ struct CompareResult {
   file_name: String,
   left_path: Option<String>,
   right_path: Option<String>,
-  left_size: Option<ImageStatusSize>,
-  right_size: Option<ImageStatusSize>,
+  left_size: Option<ImageSize>,
+  right_size: Option<ImageSize>,
   left_error: Option<String>,
   right_error: Option<String>,
   status: CompareStatus,
@@ -169,14 +169,14 @@ fn is_supported_image(path: &Path) -> bool {
   )
 }
 
-fn read_dimensions(path: &Path) -> Result<ImageStatusSize, String> {
+fn read_dimensions(path: &Path) -> Result<ImageSize, String> {
   let (width, height) = image_dimensions(path)
     .map_err(|err| format!("读取图片尺寸失败 {}：{err}", path.display()))?;
 
-  Ok(ImageStatusSize { width, height })
+  Ok(ImageSize { width, height })
 }
 
-fn read_dimensions_safe(path: Option<&Path>) -> (Option<ImageStatusSize>, Option<String>) {
+fn read_dimensions_safe(path: Option<&Path>) -> (Option<ImageSize>, Option<String>) {
   match path {
     Some(path) => match read_dimensions(path) {
       Ok(size) => (Some(size), None),
@@ -188,11 +188,18 @@ fn read_dimensions_safe(path: Option<&Path>) -> (Option<ImageStatusSize>, Option
 
 fn build_status_and_message(
   file_name: &str,
-  left_size: Option<&ImageStatusSize>,
-  right_size: Option<&ImageStatusSize>,
+  left_size: Option<&ImageSize>,
+  right_size: Option<&ImageSize>,
   left_error: Option<&str>,
   right_error: Option<&str>,
 ) -> (CompareStatus, String) {
+  if let (Some(left), Some(right)) = (left_error, right_error) {
+    return (
+      CompareStatus::SizeMismatch,
+      format!("{file_name} 在文件夹 A/B 均无法读取尺寸：A: {left}; B: {right}"),
+    );
+  }
+
   if let Some(error) = left_error {
     return (
       CompareStatus::SizeMismatch,
@@ -343,7 +350,37 @@ mod tests {
     .expect("compare success");
 
     assert_eq!(results.len(), 2);
-    assert!(results.iter().any(|item| item.file_name == "broken.png" && item.left_error.is_some()));
+    let broken = results
+      .iter()
+      .find(|item| item.file_name == "broken.png")
+      .expect("broken result exists");
+    assert_eq!(broken.status, CompareStatus::SizeMismatch);
+    assert!(broken.left_error.is_some());
+    assert!(broken.message.contains("无法读取尺寸"));
     assert!(results.iter().any(|item| item.file_name == "ok.png" && item.status == CompareStatus::Match));
+  }
+
+  #[test]
+  fn reports_when_both_sides_are_invalid_images() {
+    let left = tempdir().expect("left tempdir");
+    let right = tempdir().expect("right tempdir");
+
+    fs::write(left.path().join("broken.png"), b"not a png").expect("write left broken png");
+    fs::write(right.path().join("broken.png"), b"not a png").expect("write right broken png");
+
+    let results = compare_image_folders(
+      left.path().to_string_lossy().into_owned(),
+      right.path().to_string_lossy().into_owned(),
+    )
+    .expect("compare success");
+
+    let broken = results
+      .iter()
+      .find(|item| item.file_name == "broken.png")
+      .expect("broken result exists");
+    assert_eq!(broken.status, CompareStatus::SizeMismatch);
+    assert!(broken.left_error.is_some());
+    assert!(broken.right_error.is_some());
+    assert!(broken.message.contains("A/B 均无法读取尺寸"));
   }
 }

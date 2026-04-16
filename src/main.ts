@@ -58,7 +58,7 @@ app.innerHTML = `
         </article>
         <article>
           <span>支持格式</span>
-          <strong>PNG / JPG / WEBP / GIF</strong>
+          <strong>PNG / JPG / JPEG / WEBP / BMP / GIF</strong>
         </article>
       </div>
     </section>
@@ -110,7 +110,7 @@ app.innerHTML = `
           </div>
           <label class="toggle-filter">
             <input id="wordpic-only" type="checkbox" />
-            <span>仅显示wordpic</span>
+            <span>仅显示 WordPic</span>
           </label>
         </div>
         <div id="results" class="results-empty">
@@ -525,8 +525,8 @@ function renderResults(): void {
             <span>${escapeHtml(item.message)}</span>
           </div>
           <div class="result-row__sizes">
-            <span>A：${formatSize(item.leftSize)}</span>
-            <span>B：${formatSize(item.rightSize)}</span>
+            <span>A：${formatSizeText(item.leftSize, item.leftPath, item.leftError)}</span>
+            <span>B：${formatSizeText(item.rightSize, item.rightPath, item.rightError)}</span>
           </div>
           <div class="result-row__status">${statusLabel(item.status)}</div>
         </button>
@@ -671,8 +671,16 @@ function renderPreview(): void {
 
   previewMetaElement.textContent = selected.message
   previewMetaElement.className = `preview-meta tone-${selected.status}`
-  leftDimensionElement.textContent = formatSize(selected.leftSize)
-  rightDimensionElement.textContent = formatSize(selected.rightSize)
+  leftDimensionElement.textContent = formatSizeText(
+    selected.leftSize,
+    selected.leftPath,
+    selected.leftError
+  )
+  rightDimensionElement.textContent = formatSizeText(
+    selected.rightSize,
+    selected.rightPath,
+    selected.rightError
+  )
 
   if (state.preview.loading) {
     leftPreviewElement.className = 'preview-box loading'
@@ -708,8 +716,17 @@ function renderPreviewImage(
   container.innerHTML = `<img src="${dataUrl}" alt="${escapeAttribute(alt)}" />`
 }
 
-function formatSize(size: ImageSize | null): string {
-  return size ? `${size.width} × ${size.height}` : '缺失'
+function formatSizeText(size: ImageSize | null, path: string | null, error: string | null): string {
+  if (size) {
+    return `${size.width} × ${size.height}`
+  }
+  if (!path) {
+    return '缺失'
+  }
+  if (error) {
+    return '读取失败'
+  }
+  return '未知'
 }
 
 function statusLabel(status: CompareStatus): string {
