@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-  aico_desktop_lib::run();
+    aico_desktop_lib::run();
 }
