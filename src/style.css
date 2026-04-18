@@ -574,6 +574,142 @@ h2 {
   font-size: 14px;
 }
 
+.hidden {
+  display: none !important;
+}
+
+.mode-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.mode-tabs,
+.view-toggle,
+.locale-switch,
+.filters-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mode-tabs,
+.view-toggle {
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(56, 44, 34, 0.1);
+}
+
+.mode-tab,
+.view-chip,
+.locale-switch__chip {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.mode-tab.is-active,
+.view-chip.is-active,
+.locale-switch__chip.is-active {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  border-color: rgba(29, 92, 82, 0.22);
+}
+
+.mode-help {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.folder-grid--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.folder-note {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.folder-note code {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(29, 92, 82, 0.08);
+  color: var(--primary-strong);
+}
+
+.filters-left {
+  justify-content: flex-start;
+}
+
+.view-toggle.hidden {
+  display: none !important;
+}
+
+.result-row__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.locale-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(29, 92, 82, 0.1);
+  color: var(--primary-strong);
+}
+
+.locale-tag.status-match {
+  background: var(--match-soft);
+  color: #1b5e3a;
+}
+
+.locale-tag.status-size_mismatch,
+.locale-tag.status-missing_left,
+.locale-tag.status-missing_right {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.locale-tag.more {
+  background: rgba(98, 85, 74, 0.12);
+  color: var(--muted);
+}
+
+.locale-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.locale-switch {
+  margin-top: -4px;
+}
+
+.locale-switch.is-hidden {
+  display: none;
+}
+
 @media (max-width: 1320px) {
   body {
     min-width: 1120px;
